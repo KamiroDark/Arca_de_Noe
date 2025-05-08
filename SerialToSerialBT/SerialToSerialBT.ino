@@ -17,9 +17,8 @@ void loop() {
     dato.trim();  // Quitar espacios en blanco o saltos
 
     if (dato.length() > 0) {
-      String mensaje = "Distancia: " + dato + " cm\n";
-      SerialBT.print(mensaje);  // Enviar al PC por Bluetooth
-      Serial.print(mensaje);    // Mostrar en el monitor serie
+      SerialBT.println(dato);   // Solo número
+      Serial.println("Enviado: " + dato);   // Mostrar en el monitor serie
     }
   }
 
