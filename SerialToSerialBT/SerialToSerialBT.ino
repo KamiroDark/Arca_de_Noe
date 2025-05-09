@@ -1,33 +1,21 @@
 #include "BluetoothSerial.h"
 BluetoothSerial SerialBT;
 
-const String device_name = "ESP32-Arca-Slave";
-
 void setup() {
-  Serial.begin(115200);  // Depuración por USB (opcional)
-  Serial1.begin(9600, SERIAL_8N1, 1, 0);  // UART con el Arduino: RX=GPIO16, TX=GPIO17
-  SerialBT.begin(device_name);  // Iniciar Bluetooth
-  Serial.println("Bluetooth iniciado como: " + device_name);
+  Serial.begin(9600);             
+  SerialBT.begin("ESP32_Bluetooth"); // Nombre BluetoothVisible
+  Serial.println("Bluetooth iniciado. Busque 'ESP32_Bluetooth' para conectar.");
+  // Iniciar UART2: RX en GPIO16, TX en GPIO17 (115200 baudios):contentReference[oaicite:14]{index=14}.
+  Serial2.begin(9600, SERIAL_8N1, 16, 17);
 }
 
 void loop() {
-  // Leer línea desde Arduino (UART)
-  if (Serial1.available()) {
-    String dato = Serial1.readStringUntil('\n');
-    dato.trim();  // Quitar espacios en blanco o saltos
-
-    if (dato.length() > 0) {
-      SerialBT.println(dato);   // Solo número
-      Serial.println("Enviado: " + dato);   // Mostrar en el monitor serie
-    }
+  // Si llegan datos del Arduino por Serial2:
+  if (Serial2.available()) {
+    String dist = Serial2.readStringUntil('\n'); 
+    // Mostrar en Monitor Serial
+    Serial.println("Distancia: " + dist + " cm");
+    // Enviar por Bluetooth clásico al dispositivo emparejado
+    SerialBT.println(dist);
   }
-
-  // (Opcional) Reenviar datos desde Bluetooth hacia el Arduino
-  if (SerialBT.available()) {
-    char c = SerialBT.read();
-    Serial1.write(c);
-    Serial.print(c);
-  }
-
-  delay(10);
 }
